@@ -1,0 +1,66 @@
+<!doctype html>
+<html>
+<head>
+    <% include ../comm/header.ejs %>
+</head>
+<body>
+<% include ../comm/body_header.ejs %>
+<div class="am-cf am-padding">
+    <div class="am-fl am-cf"><strong class="am-text-primary am-text-lg">排行</strong>
+    </div>
+</div>
+
+
+<div class="am-cf am-padding">
+    <form action="/stat/pageList" method="post" class="am-form user-account-form">
+        <input type="text" name="startDate" id="startDate" class="am-form-field user-account-form-date"
+               value="<%= startDate %>">&nbsp;-&nbsp;
+        <input type="text" name="endDate" id="endDate" class="am-form-field" value="<%= endDate %>">
+
+        <div class="am-cf" style="margin-top: 10px;">
+            <input type="submit" name="" value="查 询" class="am-btn am-btn-primary am-btn-sm am-fl">
+        </div>
+    </form>
+</div>
+<div class="am-g">
+    <div class="am-u-sm-12">
+        <form class="am-form">
+            <table class="am-table am-table-striped am-table-hover table-main">
+                <thead>
+                <tr>
+                    <th class="table-title">用户名</th>
+                    <th class="table-title"><%= result.propertyName %></th>
+                </tr>
+                </thead>
+                <tbody>
+                <% for(var i = 0; i < result.length; i++) { %>
+                <tr>
+                    <td><%= result[i].nickname %></td>
+                    <td>
+                        <%= result[i].propertyCount %>
+                    </td>
+                </tr>
+                <% } %>
+                </tbody>
+            </table>
+            <div class="am-cf">
+                共 <%= result.count %> 条记录
+                <div class="am-fr">
+                    <%- result.pageStr %>
+                </div>
+            </div>
+        </form>
+    </div>
+
+</div>
+<% include ../comm/body_footer.ejs %>
+<script type="text/javascript">
+//日期插件配置
+    $('#startDate,#endDate').datetimepicker({
+        timepicker: false,
+        format: 'Y-m-d',
+        formatDate: 'Y-m-d'
+    });
+</script>
+</body>
+</html>

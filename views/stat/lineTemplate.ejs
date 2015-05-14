@@ -1,0 +1,155 @@
+<!doctype html>
+<html>
+<head>
+    <% include ../comm/header.ejs %>
+</head>
+<body>
+<% include ../comm/body_header.ejs %>
+<div class="am-cf am-padding">
+    <div class="am-fl am-cf"><strong class="am-text-primary am-text-lg">首页</strong> /
+        <small><%=title%></small>
+    </div>
+</div>
+
+<div class="am-cf am-padding">
+    <form action="/stat/lineTemplate" method="post" class="am-form user-account-form">
+        <input type="text" name="startDate" id="startDate" class="am-form-field user-account-form-date"
+               value="<%= startDate %>">&nbsp;-&nbsp;
+        <input type="text" name="endDate" id="endDate" class="am-form-field" value="<%= endDate %>">
+
+        <div class="am-cf" style="margin-top: 10px;">
+            <input type="submit" name="" value="查 询" class="am-btn am-btn-primary am-btn-sm am-fl">
+        </div>
+    </form>
+</div>
+<div class="am-cf am-padding">
+    <div class="am-g">
+
+        <div id="main" style="height: 400px"></div>
+
+    </div>
+</div>
+<a class="am-icon-btn am-icon-th-list am-show-sm-only admin-menu"
+   data-am-offcanvas="{target: '#admin-offcanvas'}"></a>
+<% include ../comm/body_footer.ejs %>
+<script type="text/javascript">
+    //日期插件配置
+    $('#startDate,#endDate').datetimepicker({
+        timepicker: false,
+        format: 'Y-m-d',
+        formatDate: 'Y-m-d'
+    });
+
+    // 路径配置
+    require.config({
+        paths: {
+            echarts: 'http://echarts.baidu.com/build/dist'
+        }
+    });
+
+    // 使用
+    require(
+            [
+                'echarts',
+                'echarts/chart/line',   // 按需加载所需图表，如需动态类型切换功能，别忘了同时加载相应图表
+                'echarts/chart/bar' // 使用柱状图就加载bar模块，按需加载
+            ],
+            function (ec) {
+                // 基于准备好的dom，初始化echarts图表
+                var myChart = ec.init(document.getElementById('main'));
+                var option = {
+                    title: {
+                        text: '<%=title%>',
+                        subtext: '---'
+                    },
+                    tooltip: {
+                        trigger: 'axis'
+                    },
+                    legend: {
+                        data: ['日增', '日活用户', '日活人次']
+                    },
+                    toolbox: {
+                        show: true,
+                        feature: {
+                            mark: {show: true},
+                            dataView: {show: true, readOnly: false},
+                            magicType: {show: true, type: ['line', 'bar']},
+                            restore: {show: true},
+                            saveAsImage: {show: true}
+                        }
+                    },
+                    calculable: true,
+                    xAxis: [
+                        {
+                            type: 'category',
+                            boundaryGap: false,
+                            data: <%- JSON.stringify(result.dates) %>
+                        }
+                    ],
+                    yAxis: [
+                        {
+                            type: 'value',
+                            axisLabel: {
+                                formatter: '{value} 个'
+                            }
+                        }
+                    ],
+                    series: [
+                        {
+                            name: '日增',
+                            type: 'line',
+                            data: <%- JSON.stringify(result.totalnum) %>,
+                            markPoint: {
+                                data: [
+                                    {type: 'max', name: '最大值'},
+                                    {type: 'min', name: '最小值'}
+                                ]
+                            },
+                            markLine: {
+                                data: [
+                                    {type: 'average', name: '平均值'}
+                                ]
+                            }
+                        },
+                        {
+                            name: '日活用户',
+                            type: 'line',
+                            data: <%- JSON.stringify(result.activenum) %>,
+                            markPoint: {
+                                data: [
+                                    {type: 'max', name: '最大值'},
+                                    {type: 'min', name: '最小值'}
+                                ]
+                            },
+                            markLine: {
+                                data: [
+                                    {type: 'average', name: '平均值'}
+                                ]
+                            }
+                        },
+                        {
+                            name: '日活人次',
+                            type: 'line',
+                            data: <%- JSON.stringify(result.activetimes) %>,
+                            markPoint: {
+                                data: [
+                                    {type: 'max', name: '最大值'},
+                                    {type: 'min', name: '最小值'}
+                                ]
+                            },
+                            markLine: {
+                                data: [
+                                    {type: 'average', name: '平均值'}
+                                ]
+                            }
+                        }
+                    ]
+                };
+
+                // 为echarts对象加载数据
+                myChart.setOption(option);
+            }
+    );
+</script>
+</body>
+</html>
